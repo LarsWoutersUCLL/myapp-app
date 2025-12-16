@@ -11,15 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Login to registry
-        run: |
-          echo "${{ secrets.REGISTRY_PASSWORD }}" | \
-          docker login registry.example.com \
-          -u ${{ secrets.REGISTRY_USER }} \
-          --password-stdin
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build & Push Docker Image
+      - name: Build & Push Image
         run: |
-          IMAGE=registry.example.com/my-app:${{ github.sha }}
+          IMAGE=ghcr.io/${{ github.repository_owner }}/my-app:${{ github.sha }}
           docker build -t $IMAGE .
           docker push $IMAGE
