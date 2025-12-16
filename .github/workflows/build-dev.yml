@@ -1,0 +1,25 @@
+name: Build Dev
+
+on:
+  push:
+    branches: ["dev"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to registry
+        run: |
+          echo "${{ secrets.REGISTRY_PASSWORD }}" | \
+          docker login registry.example.com \
+          -u ${{ secrets.REGISTRY_USER }} \
+          --password-stdin
+
+      - name: Build & Push Docker Image
+        run: |
+          IMAGE=registry.example.com/my-app:${{ github.sha }}
+          docker build -t $IMAGE .
+          docker push $IMAGE
