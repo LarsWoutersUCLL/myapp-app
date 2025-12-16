@@ -4,6 +4,10 @@ on:
   push:
     branches: ["main"]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,15 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Login to registry
-        run: |
-          echo "${{ secrets.REGISTRY_PASSWORD }}" | \
-          docker login registry.example.com \
-          -u ${{ secrets.REGISTRY_USER }} \
-          --password-stdin
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
       - name: Build & Push Docker Image
         run: |
-          IMAGE=registry.example.com/my-app:${{ github.sha }}
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE=ghcr.io/$OWNER/my-app:${{ github.sha }}
           docker build -t $IMAGE .
           docker push $IMAGE
