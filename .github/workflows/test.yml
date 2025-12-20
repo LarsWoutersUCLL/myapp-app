@@ -1,10 +1,6 @@
 name: Test
 
-on:
-  push:
-    branches: [qa]
-  pull_request:
-    branches: [qa]
+on: [push, pull_request]
 
 jobs:
   test:
