@@ -21,6 +21,6 @@ jobs:
       - name: Build & Push Docker Image
         run: |
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          IMAGE=ghcr.io/$OWNER/LarsUcll:${{ github.sha }}
+          IMAGE=ghcr.io/$OWNER/larsucll:${{ github.sha }}
           docker build -t $IMAGE .
           docker push $IMAGE
