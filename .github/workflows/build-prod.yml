@@ -3,6 +3,7 @@ name: Build Prod
 on:
   push:
     branches: ["main"]
+    tags: ["v*"]
 
 permissions:
   contents: read
@@ -21,6 +22,12 @@ jobs:
       - name: Build & Push Docker Image
         run: |
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          IMAGE=ghcr.io/$OWNER/larsucll:${{ github.sha }}
-          docker build -t $IMAGE .
-          docker push $IMAGE
+          IMAGE_HASH=ghcr.io/$OWNER/larsucll:${{ github.sha }}
+          docker build -t $IMAGE_HASH .
+          docker push $IMAGE_HASH
+
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            IMAGE_VERSION=ghcr.io/$OWNER/larsucll:${{ github.ref_name }}
+            docker tag $IMAGE_HASH $IMAGE_VERSION
+            docker push $IMAGE_VERSION
+          fi
